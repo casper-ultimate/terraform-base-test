@@ -34,8 +34,44 @@ variable "infra_env" {
 #   description = "The IP range to use for the vpc"
 # }
 
+data "aws_ami" "host" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  owners = ["099720109477"]
+}
+
+
 module "vpc" {
   source    = "./NetSet/modules/vpc"
   vpc_cidr  = "10.0.0.0/17"
   infra_env = var.infra_env
+}
+
+variable "instance_size" {
+  type = string
+}
+
+module "ec2_host" {
+  source = "./ComputeSet/modules/ec2"
+
+  infra_env     = var.infra_env
+  infra_role    = "web"
+
+  instance_size = var.instance_size
+  instance_ami  = data.aws_ami.host.id
 }
