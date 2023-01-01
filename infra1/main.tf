@@ -22,3 +22,20 @@ provider "aws" {
 #     type = "S"
 #   }
 # }
+
+variable "infra_env" {
+  type = string
+}
+
+# variable "vpc_cidr" {
+#   default = "10.0.0.0/16"
+#   type    = string
+
+#   description = "The IP range to use for the vpc"
+# }
+
+module "vpc" {
+  source    = "./NetSet/modules/vpc"
+  vpc_cidr  = "10.0.0.0/17"
+  infra_env = var.infra_env
+}
