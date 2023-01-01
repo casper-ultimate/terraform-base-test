@@ -69,8 +69,8 @@ variable "instance_size" {
 module "ec2_host" {
   source = "./ComputeSet/modules/ec2"
 
-  infra_env     = var.infra_env
-  infra_role    = "web"
+  infra_env  = var.infra_env
+  infra_role = "web"
 
   instance_size = var.instance_size
   instance_ami  = data.aws_ami.host.id
