@@ -5,15 +5,6 @@ terraform {
       version = "4.48"
     }
   }
-
-  backend "s3" {
-    bucket  = "my-terraform-state-werwerwe"
-    key     = "global/tfstate/terraform.tfstate"
-    region  = "us-east-1"
-    encrypt = true
-    
-  }
-  
 }
 
 resource "aws_vpc" "example" {
@@ -26,7 +17,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "my_terraform_state_bucket" {
-  bucket = "my-terraform-state-werwerwe"
+  bucket = "my-terraform-state-bucket-a-rwerwerwe"
 }
 
 resource "aws_s3_bucket_acl" "bucket_acl_1" {
