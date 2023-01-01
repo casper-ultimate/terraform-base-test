@@ -23,3 +23,28 @@ variable "instance_root_device_size" {
   description = "Root block size in GB"
   default     = 12
 }
+
+variable "subnets" {
+  type = list(string)
+
+  description = "valid subnets to assign to host"
+}
+
+variable "security_groups" {
+  type = list(string)
+
+  description = "security groups to assign to host"
+  default     = []
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "tags for the ec2 instance"
+}
+
+variable "withElasticIp" {
+  type        = bool
+  default     = false
+  description = "whether to create an EIP for the host"
+}

@@ -1,3 +1,8 @@
+resource "random_shuffle" "subnets" {
+  input        = var.subnets
+  result_count = 1
+}
+
 resource "aws_instance" "host_instance" {
   ami           = var.instance_ami
   instance_type = var.instance_size
@@ -7,16 +12,25 @@ resource "aws_instance" "host_instance" {
     volume_type = "gp3"
   }
 
-  tags = {
-    Name        = "wip-${var.infra_env}-host"
-    Environment = var.infra_env
-    ManagedBy   = "terraform"
+  subnet_id = random_shuffle.subnets.result[0]
 
-    Role = var.infra_role
-  }
+  vpc_security_group_ids = var.security_groups
+
+  tags = merge(
+    {
+      Name        = "wip-${var.infra_env}-host"
+      Environment = var.infra_env
+      ManagedBy   = "terraform"
+
+      Role = var.infra_role
+    },
+    var.tags
+  )
 }
 
 resource "aws_eip" "host_addr" {
+  count = (var.withElasticIp) ? 1 : 0
+
   vpc = true
   lifecycle {
     prevent_destroy = true
@@ -32,6 +46,8 @@ resource "aws_eip" "host_addr" {
 }
 
 resource "aws_eip_association" "eip_assoc" {
+  count = (var.withElasticIp) ? 1 : 0
+
   instance_id   = aws_instance.host_instance.id
-  allocation_id = aws_eip.host_addr.id
+  allocation_id = aws_eip.host_addr[0].id
 }

@@ -19,3 +19,10 @@ output "vpc_private_subnets" {
     subnet.id => subnet.cidr_block
   }
 }
+
+output "security_group_public" {
+  value = aws_security_group.public_group.id
+}
+output "security_group_private" {
+  value = aws_security_group.private_group.id
+}

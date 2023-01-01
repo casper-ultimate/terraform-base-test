@@ -66,7 +66,7 @@ variable "instance_size" {
   type = string
 }
 
-module "ec2_host" {
+module "experience_host" {
   source = "./ComputeSet/modules/ec2"
 
   infra_env  = var.infra_env
@@ -74,4 +74,32 @@ module "ec2_host" {
 
   instance_size = var.instance_size
   instance_ami  = data.aws_ami.host.id
+
+  subnets         = keys(module.vpc.vpc_public_subnets)
+  security_groups = [module.vpc.security_group_public]
+
+  tags = {
+    Name = "wip-${var.infra_env}-ec2-experience"
+  }
+
+  withElasticIp = true
+}
+
+module "worker_host" {
+  source = "./ComputeSet/modules/ec2"
+
+  infra_env  = var.infra_env
+  infra_role = "worker"
+
+  instance_size = var.instance_size
+  instance_ami  = data.aws_ami.host.id
+
+  subnets         = keys(module.vpc.vpc_private_subnets)
+  security_groups = [module.vpc.security_group_private]
+
+  tags = {
+    Name = "wip-${var.infra_env}-ec2-worker"
+  }
+
+  withElasticIp = false
 }
