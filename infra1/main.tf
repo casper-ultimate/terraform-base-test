@@ -61,7 +61,7 @@ module "experience_host" {
   infra_role = "web"
 
   instance_size = var.instance_size
-  instance_ami  = "ami-0d5d9d301c853a04a" #"ami-0a606d8395a538502"
+  instance_ami  = "ami-0283a57753b18025b" #"ami-0a606d8395a538502"
 
   subnets         = keys(module.vpc.vpc_public_subnets)
   security_groups = [module.vpc.security_group_public]
@@ -72,11 +72,12 @@ module "experience_host" {
 
   withElasticIp = true
 
-  user_data = <<EOF
-  #!/bin/bash
-  echo "Hello, World!" > index.html
-  nohup busybox httpd -f -p 80 &
-  EOF
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo echo "Hello, World" > index.html
+              sudo nohup busybox httpd -f -p 80
+              EOF
+  
 }
 
 module "worker_host" {
@@ -86,7 +87,7 @@ module "worker_host" {
   infra_role = "worker"
 
   instance_size = var.instance_size
-  instance_ami  = "ami-0d5d9d301c853a04a" #"ami-0a606d8395a538502"
+  instance_ami  = "ami-0283a57753b18025b" #"ami-0a606d8395a538502"
 
   subnets         = keys(module.vpc.vpc_private_subnets)
   security_groups = [module.vpc.security_group_private]

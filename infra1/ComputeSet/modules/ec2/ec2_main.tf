@@ -28,6 +28,7 @@ resource "aws_instance" "host_instance" {
   )
 
   user_data = var.user_data
+  user_data_replace_on_change = true
 
 }
 
