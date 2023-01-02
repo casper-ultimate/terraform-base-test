@@ -48,3 +48,8 @@ variable "withElasticIp" {
   default     = false
   description = "whether to create an EIP for the host"
 }
+
+variable "user_data" {
+  type    = any
+  default = ""
+}

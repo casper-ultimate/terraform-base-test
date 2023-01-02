@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region  = "us-east-2"
   profile = "default"
 }
 
@@ -34,32 +34,20 @@ variable "infra_env" {
 #   description = "The IP range to use for the vpc"
 # }
 
-data "aws_ami" "host" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  owners = ["099720109477"]
+variable "public_subnets_a" {
+  type = map(string)
 }
 
+variable "private_subnets_a" {
+  type = map(string)
+}
 
 module "vpc" {
-  source    = "./NetSet/modules/vpc"
-  vpc_cidr  = "10.0.0.0/17"
-  infra_env = var.infra_env
+  source             = "./NetSet/modules/vpc"
+  vpc_cidr           = "10.0.0.0/17"
+  infra_env          = var.infra_env
+  public_subnet_map  = var.public_subnets_a
+  private_subnet_map = var.private_subnets_a
 }
 
 variable "instance_size" {
@@ -73,7 +61,7 @@ module "experience_host" {
   infra_role = "web"
 
   instance_size = var.instance_size
-  instance_ami  = data.aws_ami.host.id
+  instance_ami  = "ami-0d5d9d301c853a04a" #"ami-0a606d8395a538502"
 
   subnets         = keys(module.vpc.vpc_public_subnets)
   security_groups = [module.vpc.security_group_public]
@@ -83,6 +71,12 @@ module "experience_host" {
   }
 
   withElasticIp = true
+
+  user_data = <<EOF
+  #!/bin/bash
+  echo "Hello, World!" > index.html
+  nohup busybox httpd -f -p 80 &
+  EOF
 }
 
 module "worker_host" {
@@ -92,7 +86,7 @@ module "worker_host" {
   infra_role = "worker"
 
   instance_size = var.instance_size
-  instance_ami  = data.aws_ami.host.id
+  instance_ami  = "ami-0d5d9d301c853a04a" #"ami-0a606d8395a538502"
 
   subnets         = keys(module.vpc.vpc_private_subnets)
   security_groups = [module.vpc.security_group_private]

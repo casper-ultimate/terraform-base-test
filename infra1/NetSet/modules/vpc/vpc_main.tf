@@ -1,6 +1,5 @@
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
-
   tags = {
     Name        = "wip-${var.infra_env}-vpc"
     Environment = var.infra_env

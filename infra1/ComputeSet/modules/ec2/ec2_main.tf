@@ -26,6 +26,9 @@ resource "aws_instance" "host_instance" {
     },
     var.tags
   )
+
+  user_data = var.user_data
+
 }
 
 resource "aws_eip" "host_addr" {
@@ -33,7 +36,7 @@ resource "aws_eip" "host_addr" {
 
   vpc = true
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = {
